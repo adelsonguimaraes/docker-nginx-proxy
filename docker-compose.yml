@@ -1,0 +1,43 @@
+version: '3'
+
+services:
+  nginx-proxy:
+    image: jwilder/nginx-proxy:alpine
+    ports:
+      - "80:80"
+    volumes:
+      - /etc/nginx/vhost.d
+      - /etc/nginx/certs
+      - /usr/share/nginx/html
+      - /var/run/docker.sock:/tmp/docker.sock:ro
+    # network_mode: bridge
+    networks: 
+     - proxy
+
+  webserver1:
+    image: php:7.2-apache
+    expose:
+      - 80
+    environment:
+      LETSENCRYPT_HOST: web1.localhost
+      VIRTUAL_HOST: web1.localhost
+    volumes:
+      - ./html1:/var/www/html
+    networks: 
+     - proxy
+
+  webserver2:
+    image: php:7.2-apache
+    expose:
+      - 80
+    environment:
+      LETSENCRYPT_HOST: web1.localhost
+      VIRTUAL_HOST: web2.localhost
+    volumes:
+      - ./html2:/var/www/html
+    networks: 
+     - proxy
+
+networks: 
+ proxy:
+    driver: bridge
