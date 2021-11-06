@@ -3,7 +3,7 @@ version: '3'
 services:
 
   nginx-proxy:
-    image: jwilder/nginx-proxy
+    image: jwilder/nginx-proxy:alpine
     container_name: nginx-proxy
     ports:
       - "80:80"
@@ -18,7 +18,6 @@ services:
     labels:
       - "com.github.jrcs.letsencrypt_nginx_proxy_companion.nginx_proxy"
     restart: always
-    network_mode: bridge
 
   letsencrypt:
     image: jrcs/letsencrypt-nginx-proxy-companion
@@ -33,7 +32,6 @@ services:
       - acme:/etc/acme.sh
       - /var/run/docker.sock:/var/run/docker.sock:ro
     restart: always
-    network_mode: bridge
 
   webserver1:
     image: php:7.2-apache
@@ -41,11 +39,10 @@ services:
     expose:
       - 80
     environment:
-      LETSENCRYPT_HOST: web1.adelsonguimaraes.com.br
-      VIRTUAL_HOST: web1.adelsonguimaraes.com.br
+      LETSENCRYPT_HOST: web1.hello.com
+      VIRTUAL_HOST: web1.hello.com
     volumes:
       - ./html1:/var/www/html
-    network_mode: bridge
     
   webserver2:
     image: php:7.2-apache
@@ -53,11 +50,10 @@ services:
     expose:
       - 80
     environment:
-      LETSENCRYPT_HOST: web2.adelsonguimaraes.com.br
-      VIRTUAL_HOST: web2.adelsonguimaraes.com.br
+      LETSENCRYPT_HOST: web2.hello.com
+      VIRTUAL_HOST: web2.hello.com
     volumes:
       - ./html2:/var/www/html
-    network_mode: bridge
     
 volumes:
   conf:
@@ -67,7 +63,7 @@ volumes:
   certs:
   acme:
 
-# networks:
-#   default:
-#     external:
-#       name: nginx-proxy
+networks:
+  default:
+    external:
+      name: nginx-proxy
